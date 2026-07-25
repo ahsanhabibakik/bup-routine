@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0f5132">
+<title>BUP Routine Builder</title>
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<style>
+:root{--g:#0f5132;--g2:#1a7a4e;--b:#1d5b8a;--bg:#f4f7f5;--card:#fff;--line:#e2ebe5;--txt:#1f2a24;--mut:#5f6f66;--warn:#b02a37;--amber:#b8860b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--txt);font-size:15px;line-height:1.4;padding-bottom:72px}
+header{background:var(--g);color:#fff;padding:14px 16px calc(14px + env(safe-area-inset-top)) 16px;position:sticky;top:0;z-index:20}
+header h1{margin:0;font-size:18px;font-weight:700}
+header .sub{font-size:12px;opacity:.85;margin-top:2px}
+.wrap{max-width:760px;margin:0 auto;padding:12px}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);display:flex;z-index:30;padding-bottom:env(safe-area-inset-bottom)}
+.tabs button{flex:1;border:0;background:none;padding:10px 4px;font-size:11px;color:var(--mut);font-weight:600;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.tabs button .ic{font-size:19px}
+.tabs button.on{color:var(--g)}
+.tabs button.on .ic{transform:translateY(-1px)}
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+select,input[type=text]{font-size:14px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--txt);flex:1;min-width:90px}
+input[type=text]{flex-basis:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.card .meta{flex:1;min-width:0}
+.card .t1{font-weight:700;font-size:14px}
+.card .t2{font-size:12px;color:var(--mut);margin-top:2px}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:20px;margin-right:5px}
+.p24{background:#dbe9f5;color:#1d5b8a}.p25{background:#fce9d6;color:#9a5a1a}.p26{background:#e6dcf0;color:#6a3ba0}.p23{background:#e0e0e0;color:#555}.pmba{background:#d9f0e4;color:#0f5132}
+.addbtn{border:0;background:var(--g);color:#fff;width:38px;height:38px;border-radius:10px;font-size:20px;font-weight:700;cursor:pointer;flex:none}
+.addbtn.rm{background:var(--warn)}
+.addbtn.in{background:#9fbfab}
+.qbtns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.qbtns button{border:1px solid var(--g);color:var(--g);background:#fff;border-radius:20px;padding:6px 11px;font-size:12px;font-weight:600;cursor:pointer}
+.qbtns button:active{background:var(--g);color:#fff}
+.bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 12px}
+.stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:7px 11px;font-size:12px;color:var(--mut);text-align:center;flex:1}
+.stat b{display:block;font-size:17px;color:var(--g);font-weight:700}
+.btn{border:0;border-radius:10px;padding:10px 14px;font-size:14px;font-weight:700;cursor:pointer}
+.btn.pri{background:var(--g);color:#fff}.btn.sec{background:#fff;border:1px solid var(--line);color:var(--txt)}.btn.dl{background:var(--b);color:#fff}
+.gridwrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:12px;background:#fff}
+table.grid{border-collapse:collapse;width:100%;min-width:640px}
+.grid th,.grid td{border:1px solid var(--line);padding:4px;vertical-align:top;font-size:11px;text-align:center}
+.grid th{background:var(--g);color:#fff;font-size:11px;padding:6px 4px}
+.grid td.tm{background:#eef5f0;font-weight:700;color:var(--g);white-space:nowrap;font-size:10px}
+.cell{border-radius:7px;padding:4px 3px;margin:2px 0;font-size:10px;line-height:1.2}
+.cell .cc{font-weight:700}.cell .cm{font-size:8.5px;opacity:.8}
+.cell.conf{outline:2px solid var(--warn)}
+.warnbox{background:#fdecea;border:1px solid #f2b8b5;border-radius:10px;padding:9px 12px;font-size:12.5px;color:var(--warn);margin:10px 0}
+.okbox{background:#eef7f1;border:1px solid #c6e2d0;border-radius:10px;padding:9px 12px;font-size:12.5px;margin:10px 0}
+.empty{text-align:center;color:var(--mut);padding:30px 12px;font-size:13px}
+.hide{display:none}
+.section-toggle{border:1px solid var(--line);background:#fff;border-radius:8px;font-size:11px;font-weight:700;padding:3px 8px;cursor:pointer;color:var(--b)}
+.install{position:fixed;left:12px;right:12px;bottom:74px;background:var(--g);color:#fff;border-radius:12px;padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;z-index:40;box-shadow:0 6px 20px rgba(0,0,0,.18)}
+.install button{border:0;border-radius:8px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer}
+.install .yes{background:#fff;color:var(--g)}.install .no{background:transparent;color:#fff;opacity:.8}
+@media print{
+  header,.tabs,.filters,.qbtns,.bar .btn,.install,#browseView,#buildView,.noprint{display:none!important}
+  body{background:#fff;padding:0}.wrap{max-width:none}
+  .gridwrap{border:0;overflow:visible}table.grid{min-width:0}
+  #gridView{display:block!important}
+  .printhead{display:block!important;margin-bottom:8px}
+}
+.printhead{display:none}
+</style>
+</head>
+<body>
+<header>
+  <h1>BUP Routine Builder</h1>
+  <div class="sub">BBA (General) &middot; July&ndash;December 2026 &middot; all batches &amp; sections</div>
+</header>
+
+<div class="wrap">
+  <!-- BROWSE -->
+  <div id="browseView">
+    <div class="filters">
+      <select id="fBatch"><option value="">All batches</option><option value="2023">BBA-2023</option><option value="2024">BBA-2024</option><option value="2025">BBA-2025</option><option value="2026">BBA-2026</option><option value="MBA">MBA</option></select>
+      <select id="fSection"><option value="">All sections</option><option>A</option><option>B</option><option>SCM</option><option>FIN</option><option>HRM</option><option>MKT</option><option>ECON</option></select>
+      <select id="fDay"><option value="">All days</option><option>Sun</option><option>Mon</option><option>Tue</option><option>Wed</option><option>Thu</option></select>
+      <input type="text" id="fSearch" placeholder="Search course, code or teacher...">
+    </div>
+    <div id="browseList"></div>
+  </div>
+
+  <!-- BUILD -->
+  <div id="buildView" class="hide">
+    <div class="qbtns" id="quickLoad"></div>
+    <div class="bar">
+      <div class="stat"><b id="stCourses">0</b>courses</div>
+      <div class="stat"><b id="stDays">0</b>days/week</div>
+      <div class="stat"><b id="stConf">0</b>clashes</div>
+    </div>
+    <div class="bar">
+      <button class="btn sec" onclick="clearAll()">Clear all</button>
+      <button class="btn pri" onclick="show('grid')">View routine &rarr;</button>
+    </div>
+    <div id="selList"></div>
+  </div>
+
+  <!-- GRID -->
+  <div id="gridView" class="hide">
+    <div class="printhead">
+      <h2 style="margin:0;color:#0f5132;font-size:16px">My Class Routine &mdash; July&ndash;December 2026</h2>
+      <div id="printSummary" style="font-size:12px;color:#555"></div>
+    </div>
+    <div class="bar noprint">
+      <button class="btn sec" onclick="show('build')">&larr; Edit</button>
+      <button class="btn dl" onclick="window.print()">Download PDF</button>
+    </div>
+    <div id="conflictArea"></div>
+    <div class="gridwrap"><table class="grid" id="gridTable"></table></div>
+    <div id="dayStats" class="noprint"></div>
+  </div>
+</div>
+
+<div class="tabs">
+  <button id="tabBrowse" class="on" onclick="show('browse')"><span class="ic">&#128269;</span>Browse</button>
+  <button id="tabBuild" onclick="show('build')"><span class="ic">&#9998;</span>Build</button>
+  <button id="tabGrid" onclick="show('grid')"><span class="ic">&#128197;</span>Routine</button>
+</div>
+
+<script id="dataScript" type="application/json">{"meta": {"title": "BUP BBA-General Class Routine", "term": "July-December 2026", "effective": "2026-07-26", "slots": ["08:30-10:00", "10:15-11:45", "12:00-13:30", "14:00-15:30", "15:45-17:15"], "days": ["Sun", "Mon", "Tue", "Wed", "Thu"]}, "classes": [{"id": 0, "day": "Sun", "slot": 0, "time": "08:30-10:00", "code": "FIN4705", "title": "Investment Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 1, "day": "Sun", "slot": 0, "time": "08:30-10:00", "code": "FIN1201", "title": "Principles of Finance", "batch": "2026", "section": "A", "room": "CR1203", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 2, "day": "Sun", "slot": 1, "time": "10:15-11:45", "code": "MKT4705", "title": "Brand Management", "batch": "2023", "section": "MKT", "room": "CR1101", "teacher": "Prof. Dr. Mohammad Abdullah Mahfuz"}, {"id": 3, "day": "Sun", "slot": 1, "time": "10:15-11:45", "code": "HRM2202", "title": "Organizational Behavior", "batch": "2025", "section": "A", "room": "CR1103", "teacher": "Lec. Tahmina Akter"}, {"id": 4, "day": "Sun", "slot": 1, "time": "10:15-11:45", "code": "ACC2203", "title": "Managerial Accounting", "batch": "2025", "section": "B", "room": "CR1201", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 5, "day": "Sun", "slot": 1, "time": "10:15-11:45", "code": "FIN4810", "title": "International Financial Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 6, "day": "Sun", "slot": 1, "time": "10:15-11:45", "code": "FIN1201", "title": "Principles of Finance", "batch": "2026", "section": "B", "room": "CR1203", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 7, "day": "Sun", "slot": 2, "time": "12:00-13:30", "code": "MKT4704", "title": "Consumer Behavior", "batch": "2023", "section": "MKT", "room": "CR1101", "teacher": "Prof. Dr. Mohammad Abdullah Mahfuz"}, {"id": 8, "day": "Sun", "slot": 2, "time": "12:00-13:30", "code": "ALD3210", "title": "Business Analytics", "batch": "2024", "section": "B", "room": "CR1102", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 9, "day": "Sun", "slot": 2, "time": "12:00-13:30", "code": "ACC2203", "title": "Managerial Accounting", "batch": "2025", "section": "A", "room": "CR1103", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 10, "day": "Sun", "slot": 2, "time": "12:00-13:30", "code": "HRM2202", "title": "Organizational Behavior", "batch": "2025", "section": "B", "room": "CR1201", "teacher": "Lec. Tahmina Akter"}, {"id": 11, "day": "Sun", "slot": 2, "time": "12:00-13:30", "code": "HRM1201", "title": "Principles of Management", "batch": "2026", "section": "A", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 12, "day": "Sun", "slot": 3, "time": "14:00-15:30", "code": "ALD3209", "title": "International Business Environment", "batch": "2024", "section": "B", "room": "CR1101", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 13, "day": "Sun", "slot": 3, "time": "14:00-15:30", "code": "MKT2202", "title": "Marketing Management", "batch": "2025", "section": "B", "room": "CR1102", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 14, "day": "Sun", "slot": 3, "time": "14:00-15:30", "code": "ALD3210", "title": "Business Analytics", "batch": "2024", "section": "A", "room": "CR1103", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 15, "day": "Sun", "slot": 3, "time": "14:00-15:30", "code": "HRM1201", "title": "Principles of Management", "batch": "2026", "section": "B", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 16, "day": "Sun", "slot": 3, "time": "14:00-15:30", "code": "SCOM6204", "title": "Strategic Supply Chain and Operations Mgmt", "batch": "MBA", "section": "SCM", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 17, "day": "Sun", "slot": 4, "time": "15:45-17:15", "code": "MKT2202", "title": "Marketing Management", "batch": "2025", "section": "A", "room": "CR1101", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 18, "day": "Sun", "slot": 4, "time": "15:45-17:15", "code": "ALD3209", "title": "International Business Environment", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 19, "day": "Sun", "slot": 4, "time": "15:45-17:15", "code": "SCOM6204", "title": "Strategic Supply Chain and Operations Mgmt", "batch": "MBA", "section": "SCM", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 20, "day": "Mon", "slot": 0, "time": "08:30-10:00", "code": "FIN4704", "title": "Corporate Finance", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 21, "day": "Mon", "slot": 0, "time": "08:30-10:00", "code": "BUS5202", "title": "Statistical Applications in Business", "batch": "MBA", "section": "2026", "room": "CR503", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 22, "day": "Mon", "slot": 1, "time": "10:15-11:45", "code": "ALD3208", "title": "Business Research Methodology", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Asst. Prof. Dr. Mr Fazlul Hoque"}, {"id": 23, "day": "Mon", "slot": 1, "time": "10:15-11:45", "code": "FIN4810", "title": "International Financial Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 24, "day": "Mon", "slot": 1, "time": "10:15-11:45", "code": "FIN6201", "title": "Corporate Finance", "batch": "MBA", "section": "FIN", "room": "CR1203", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 25, "day": "Mon", "slot": 1, "time": "10:15-11:45", "code": "BUS5202", "title": "Statistical Applications in Business", "batch": "MBA", "section": "2026", "room": "CR503", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 26, "day": "Mon", "slot": 2, "time": "12:00-13:30", "code": "ALD3208", "title": "Business Research Methodology", "batch": "2024", "section": "B", "room": "CR1101", "teacher": "Asst. Prof. Dr. Mr Fazlul Hoque"}, {"id": 27, "day": "Mon", "slot": 2, "time": "12:00-13:30", "code": "SCOM3203", "title": "Project Management", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 28, "day": "Mon", "slot": 2, "time": "12:00-13:30", "code": "ALD2205", "title": "Macroeconomics", "batch": "2025", "section": "A", "room": "CR1103", "teacher": "Lec Chowdhury Fariha"}, {"id": 29, "day": "Mon", "slot": 2, "time": "12:00-13:30", "code": "FIN4707", "title": "Working Capital Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 30, "day": "Mon", "slot": 2, "time": "12:00-13:30", "code": "FIN6203", "title": "International Financial Management", "batch": "MBA", "section": "FIN", "room": "CR1203", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 31, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "ALD3209", "title": "International Business Environment", "batch": "2024", "section": "B", "room": "CR1101", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 32, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "SCOM3203", "title": "Project Management", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 33, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "ALD2205", "title": "Macroeconomics", "batch": "2025", "section": "B", "room": "CR1103", "teacher": "Lec Chowdhury Fariha"}, {"id": 34, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "MKT1201", "title": "Principles of Marketing", "batch": "2026", "section": "A", "room": "CR1201", "teacher": "Prof. Dr. Md. Jakir Hossain"}, {"id": 35, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "FIN4705", "title": "Investment Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 36, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "GED1204", "title": "Functional English & Presentation Skill", "batch": "2026", "section": "B", "room": "CR1203", "teacher": "Assoc. Prof. Yasif Ahmad Faysal"}, {"id": 37, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "SCOM2201", "title": "Principles of Supply Chain Management", "batch": "2025", "section": "A", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 38, "day": "Mon", "slot": 3, "time": "14:00-15:30", "code": "FIN6205", "title": "Investment Management", "batch": "MBA", "section": "FIN", "room": "CR503", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 39, "day": "Mon", "slot": 4, "time": "15:45-17:15", "code": "SCOM3203", "title": "Project Management", "batch": "2024", "section": "B", "room": "CR1101", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 40, "day": "Mon", "slot": 4, "time": "15:45-17:15", "code": "GED1204", "title": "Functional English & Presentation Skill", "batch": "2026", "section": "A", "room": "CR1103", "teacher": "Assoc. Prof. Yasif Ahmad Faysal"}, {"id": 41, "day": "Mon", "slot": 4, "time": "15:45-17:15", "code": "MKT1201", "title": "Principles of Marketing", "batch": "2026", "section": "B", "room": "CR1201", "teacher": "Prof. Dr. Md. Jakir Hossain"}, {"id": 42, "day": "Mon", "slot": 4, "time": "15:45-17:15", "code": "SCOM2201", "title": "Principles of Supply Chain Management", "batch": "2025", "section": "B", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 43, "day": "Mon", "slot": 4, "time": "15:45-17:15", "code": "FIN6205", "title": "Investment Management", "batch": "MBA", "section": "FIN", "room": "CR503", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 44, "day": "Tue", "slot": 0, "time": "08:30-10:00", "code": "ALD2205", "title": "Macroeconomics", "batch": "2025", "section": "A", "room": "CR1101", "teacher": "Lec Chowdhury Fariha"}, {"id": 45, "day": "Tue", "slot": 0, "time": "08:30-10:00", "code": "SCOM3203", "title": "Project Management", "batch": "2024", "section": "B", "room": "CR1102", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 46, "day": "Tue", "slot": 0, "time": "08:30-10:00", "code": "ACC2203", "title": "Managerial Accounting", "batch": "2025", "section": "B", "room": "CR1201", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 47, "day": "Tue", "slot": 0, "time": "08:30-10:00", "code": "ALD3211", "title": "Entrepreneurship Development & SME Mgmt", "batch": "2024", "section": "A", "room": "CR1204", "teacher": "Dr. Mohammad Ali, Asst. Prof."}, {"id": 48, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "MKT2202", "title": "Marketing Management", "batch": "2025", "section": "A", "room": "CR1101", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 49, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "SCOM6202", "title": "Project Management", "batch": "MBA", "section": "SCM", "room": "CR1102", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 50, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "ALD3211", "title": "Entrepreneurship Development & SME Mgmt", "batch": "2024", "section": "B", "room": "CR1103", "teacher": "Dr. Mohammad Ali, Asst. Prof."}, {"id": 51, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "ALD2205", "title": "Macroeconomics", "batch": "2025", "section": "B", "room": "CR1201", "teacher": "Lec Chowdhury Fariha"}, {"id": 52, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "HRM1201", "title": "Principles of Management", "batch": "2026", "section": "A", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 53, "day": "Tue", "slot": 1, "time": "10:15-11:45", "code": "ALD3210", "title": "Business Analytics", "batch": "2024", "section": "A", "room": "CR1204", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 54, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "ACC2203", "title": "Managerial Accounting", "batch": "2025", "section": "A", "room": "CR1101", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 55, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "SCOM6202", "title": "Project Management", "batch": "MBA", "section": "SCM", "room": "CR1102", "teacher": "Prof. Dr. Md. Miraj Hossen"}, {"id": 56, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "MKT2202", "title": "Marketing Management", "batch": "2025", "section": "B", "room": "CR1103", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 57, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "HRM4812", "title": "Strategic Human Resource Management", "batch": "2023", "section": "HRM", "room": "CR1201", "teacher": "Lec. Sabbir Ahmed"}, {"id": 58, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "HRM1201", "title": "Principles of Management", "batch": "2026", "section": "B", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 59, "day": "Tue", "slot": 2, "time": "12:00-13:30", "code": "ECON4802", "title": "Econometrics", "batch": "2023", "section": "ECON", "room": "CR1204", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 60, "day": "Tue", "slot": 3, "time": "14:00-15:30", "code": "BUS5204", "title": "Business Economics", "batch": "MBA", "section": "2026", "room": "CR1101", "teacher": "Assoc. Prof. Dr. Md. Shariful Islam"}, {"id": 61, "day": "Tue", "slot": 3, "time": "14:00-15:30", "code": "FIN6204", "title": "Working Capital Management", "batch": "MBA", "section": "FIN", "room": "CR1102", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 62, "day": "Tue", "slot": 3, "time": "14:00-15:30", "code": "ALD3210", "title": "Business Analytics", "batch": "2024", "section": "B", "room": "CR1103", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 63, "day": "Tue", "slot": 3, "time": "14:00-15:30", "code": "ALD1202", "title": "Business Communication", "batch": "2026", "section": "A", "room": "CR1201", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 64, "day": "Tue", "slot": 3, "time": "14:00-15:30", "code": "MKT4703", "title": "Global Marketing", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 65, "day": "Tue", "slot": 4, "time": "15:45-17:15", "code": "BUS5204", "title": "Business Economics", "batch": "MBA", "section": "2026", "room": "CR1101", "teacher": "Assoc. Prof. Dr. Md. Shariful Islam"}, {"id": 66, "day": "Tue", "slot": 4, "time": "15:45-17:15", "code": "ALD1202", "title": "Business Communication", "batch": "2026", "section": "B", "room": "CR1103", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 67, "day": "Tue", "slot": 4, "time": "15:45-17:15", "code": "MKT4703", "title": "Global Marketing", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 68, "day": "Wed", "slot": 0, "time": "08:30-10:00", "code": "BUS5203", "title": "Business Law and Practice", "batch": "MBA", "section": "2026", "room": "CR1101", "teacher": "Prof. Dr. Shima Zaman"}, {"id": 69, "day": "Wed", "slot": 0, "time": "08:30-10:00", "code": "ECON4802", "title": "Econometrics", "batch": "2023", "section": "ECON", "room": "CR1202", "teacher": "Lec Mahmuda Rahman Deeba"}, {"id": 70, "day": "Wed", "slot": 0, "time": "08:30-10:00", "code": "FIN6203", "title": "International Financial Management", "batch": "MBA", "section": "FIN", "room": "CR1203", "teacher": "Assoc. Prof. Dr. Md. Faruk Hossain"}, {"id": 71, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "BUS5203", "title": "Business Law and Practice", "batch": "MBA", "section": "2026", "room": "CR1101", "teacher": "Prof. Dr. Shima Zaman"}, {"id": 72, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "ALD3208", "title": "Business Research Methodology", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Asst. Prof. Dr. Mr Fazlul Hoque"}, {"id": 73, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "ACC3204", "title": "Auditing and Taxation", "batch": "2024", "section": "B", "room": "CR1201", "teacher": "Prof. Dr. Mohammad Ahsan Habib"}, {"id": 74, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "FIN4707", "title": "Working Capital Management", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 75, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "MGT6201", "title": "Strategic Management", "batch": "MBA", "section": "2025", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 76, "day": "Wed", "slot": 1, "time": "10:15-11:45", "code": "HRM2202", "title": "Organizational Behavior", "batch": "2025", "section": "A", "room": "CR1204", "teacher": "Lec. Tahmina Akter"}, {"id": 77, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "MKT5201", "title": "Marketing Theory and Practice", "batch": "MBA", "section": "2026", "room": "CR1101", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 78, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "ACC3204", "title": "Auditing and Taxation", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Prof. Dr. Mohammad Ahsan Habib"}, {"id": 79, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "ALD3208", "title": "Business Research Methodology", "batch": "2024", "section": "B", "room": "CR1201", "teacher": "Asst. Prof. Dr. Mr Fazlul Hoque"}, {"id": 80, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "FIN4704", "title": "Corporate Finance", "batch": "2023", "section": "FIN", "room": "CR1202", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 81, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "FIN6204", "title": "Working Capital Management", "batch": "MBA", "section": "FIN", "room": "CR1203", "teacher": "Asst Prof. Reajmin Sultana"}, {"id": 82, "day": "Wed", "slot": 2, "time": "12:00-13:30", "code": "HRM2202", "title": "Organizational Behavior", "batch": "2025", "section": "B", "room": "CR1204", "teacher": "Lec. Tahmina Akter"}, {"id": 83, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "MKT1201", "title": "Principles of Marketing", "batch": "2026", "section": "A", "room": "CR1101", "teacher": "Prof. Dr. Md. Jakir Hossain"}, {"id": 84, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "ALD3209", "title": "International Business Environment", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Assoc. Prof. Dr. Mansura Akter"}, {"id": 85, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "MKT5201", "title": "Marketing Theory and Practice", "batch": "MBA", "section": "2026", "room": "CR1103", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 86, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "ALD1202", "title": "Business Communication", "batch": "2026", "section": "B", "room": "CR1201", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 87, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "FIN6201", "title": "Corporate Finance", "batch": "MBA", "section": "FIN", "room": "CR1202", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 88, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "SCOM6201", "title": "Production Planning and Inventory Mgmt", "batch": "MBA", "section": "SCM", "room": "CR1203", "teacher": "Asst. Prof. Dr. Md Mamunur Rashid"}, {"id": 89, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "SCOM2201", "title": "Principles of Supply Chain Management", "batch": "2025", "section": "A", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 90, "day": "Wed", "slot": 3, "time": "14:00-15:30", "code": "HRM4812", "title": "Strategic Human Resource Management", "batch": "2023", "section": "HRM", "room": "CR503", "teacher": "Lec. Sabbir Ahmed"}, {"id": 91, "day": "Wed", "slot": 4, "time": "15:45-17:15", "code": "ALD1202", "title": "Business Communication", "batch": "2026", "section": "A", "room": "CR1101", "teacher": "Assoc. Prof. Muhammad Shahidullah Tasfiq"}, {"id": 92, "day": "Wed", "slot": 4, "time": "15:45-17:15", "code": "MKT1201", "title": "Principles of Marketing", "batch": "2026", "section": "B", "room": "CR1201", "teacher": "Prof. Dr. Md. Jakir Hossain"}, {"id": 93, "day": "Wed", "slot": 4, "time": "15:45-17:15", "code": "SCOM6201", "title": "Production Planning and Inventory Mgmt", "batch": "MBA", "section": "SCM", "room": "CR1203", "teacher": "Asst. Prof. Dr. Md Mamunur Rashid"}, {"id": 94, "day": "Wed", "slot": 4, "time": "15:45-17:15", "code": "SCOM2201", "title": "Principles of Supply Chain Management", "batch": "2025", "section": "B", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 95, "day": "Thu", "slot": 0, "time": "08:30-10:00", "code": "ALD3211", "title": "Entrepreneurship Development & SME Mgmt", "batch": "2024", "section": "B", "room": "CR1103", "teacher": "Dr. Mohammad Ali, Asst. Prof."}, {"id": 96, "day": "Thu", "slot": 0, "time": "08:30-10:00", "code": "BUS5201", "title": "Business Ethics and Leadership", "batch": "MBA", "section": "2026", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 97, "day": "Thu", "slot": 1, "time": "10:15-11:45", "code": "ACC3204", "title": "Auditing and Taxation", "batch": "2024", "section": "B", "room": "CR1101", "teacher": "Prof. Dr. Mohammad Ahsan Habib"}, {"id": 98, "day": "Thu", "slot": 1, "time": "10:15-11:45", "code": "ALD3211", "title": "Entrepreneurship Development & SME Mgmt", "batch": "2024", "section": "A", "room": "CR1103", "teacher": "Dr. Mohammad Ali, Asst. Prof."}, {"id": 99, "day": "Thu", "slot": 1, "time": "10:15-11:45", "code": "MKT4706", "title": "Services Marketing (Maj + Minor)", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 100, "day": "Thu", "slot": 1, "time": "10:15-11:45", "code": "BUS5201", "title": "Business Ethics and Leadership", "batch": "MBA", "section": "2026", "room": "CR1203", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 101, "day": "Thu", "slot": 2, "time": "12:00-13:30", "code": "GED1204", "title": "Functional English & Presentation Skill", "batch": "2026", "section": "A", "room": "CR1101", "teacher": "Assoc. Prof. Yasif Ahmad Faysal"}, {"id": 102, "day": "Thu", "slot": 2, "time": "12:00-13:30", "code": "ACC3204", "title": "Auditing and Taxation", "batch": "2024", "section": "A", "room": "CR1102", "teacher": "Prof. Dr. Mohammad Ahsan Habib"}, {"id": 103, "day": "Thu", "slot": 2, "time": "12:00-13:30", "code": "FIN1201", "title": "Principles of Finance", "batch": "2026", "section": "B", "room": "CR1201", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 104, "day": "Thu", "slot": 2, "time": "12:00-13:30", "code": "MKT4706", "title": "Services Marketing (Maj + Minor)", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Asst. Prof. Jarin Tasnim"}, {"id": 105, "day": "Thu", "slot": 2, "time": "12:00-13:30", "code": "MGT6201", "title": "Strategic Management", "batch": "MBA", "section": "2025", "room": "CR1204", "teacher": "Asst. Prof. Masuma Binte Yousuf"}, {"id": 106, "day": "Thu", "slot": 3, "time": "14:00-15:30", "code": "GED1204", "title": "Functional English & Presentation Skill", "batch": "2026", "section": "B", "room": "CR1101", "teacher": "Assoc. Prof. Yasif Ahmad Faysal"}, {"id": 107, "day": "Thu", "slot": 3, "time": "14:00-15:30", "code": "FIN1201", "title": "Principles of Finance", "batch": "2026", "section": "A", "room": "CR1201", "teacher": "Asst. Prof. Sadman Kabir"}, {"id": 108, "day": "Thu", "slot": 3, "time": "14:00-15:30", "code": "MKT4704", "title": "Consumer Behavior", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Prof. Dr. Mohammad Abdullah Mahfuz"}, {"id": 109, "day": "Thu", "slot": 3, "time": "14:00-15:30", "code": "SCOM6209", "title": "Sourcing Management", "batch": "MBA", "section": "2025", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}, {"id": 110, "day": "Thu", "slot": 4, "time": "15:45-17:15", "code": "MKT4705", "title": "Brand Management", "batch": "2023", "section": "MKT", "room": "CR1202", "teacher": "Prof. Dr. Mohammad Abdullah Mahfuz"}, {"id": 111, "day": "Thu", "slot": 4, "time": "15:45-17:15", "code": "SCOM6209", "title": "Sourcing Management", "batch": "MBA", "section": "2025", "room": "CR1204", "teacher": "Asst. Prof. S M Sayem"}]}</script>
+<script>
+const DB = JSON.parse(document.getElementById('dataScript').textContent);
+const CLASSES = DB.classes, SLOTS = DB.meta.slots, DAYS = DB.meta.days;
+let selected = new Set(JSON.parse(localStorage.getItem('bup_sel')||'[]'));
+const save=()=>localStorage.setItem('bup_sel',JSON.stringify([...selected]));
+const pillClass=b=>({'2023':'p23','2024':'p24','2025':'p25','2026':'p26','MBA':'pmba'}[b]||'p23');
+const byId=id=>CLASSES.find(c=>c.id===id);
+
+function classCard(c, mode){
+  const inSel = selected.has(c.id);
+  const btn = mode==='sel'
+    ? `<button class="addbtn rm" onclick="toggle(${c.id})">&times;</button>`
+    : `<button class="addbtn ${inSel?'in':''}" onclick="toggle(${c.id})">${inSel?'&#10003;':'+'}</button>`;
+  return `<div class="card">
+    <div class="meta">
+      <div class="t1">${c.code} &middot; ${c.title}</div>
+      <div class="t2"><span class="pill ${pillClass(c.batch)}">${c.batch==='MBA'?'MBA':'BBA-'+c.batch} ${c.section}</span> ${c.day} ${c.time}</div>
+      <div class="t2">${c.room} &middot; ${c.teacher}</div>
+    </div>${btn}</div>`;
+}
+function toggle(id){ selected.has(id)?selected.delete(id):selected.add(id); save(); renderAll(); }
+function clearAll(){ if(confirm('Remove all selected classes?')){selected.clear();save();renderAll();} }
+
+function renderBrowse(){
+  const b=fBatch.value, s=fSection.value, d=fDay.value, q=fSearch.value.trim().toLowerCase();
+  let list=CLASSES.filter(c=>(!b||c.batch===b)&&(!s||c.section===s)&&(!d||c.day===d)&&
+    (!q||(c.title+' '+c.code+' '+c.teacher).toLowerCase().includes(q)));
+  list.sort((x,y)=>DAYS.indexOf(x.day)-DAYS.indexOf(y.day)||x.slot-y.slot);
+  browseList.innerHTML = list.length? list.map(c=>classCard(c,'browse')).join('')
+    : '<div class="empty">No classes match. Adjust filters.</div>';
+}
+function renderQuick(){
+  const combos=[...new Set(CLASSES.map(c=>c.batch+'|'+c.section))]
+    .filter(x=>/^20/.test(x)).sort();
+  quickLoad.innerHTML='<span style="font-size:12px;color:#5f6f66;width:100%">Quick-load a batch section:</span>'+
+    combos.map(x=>{const[b,s]=x.split('|');return `<button onclick="loadCombo('${b}','${s}')">BBA-${b} ${s}</button>`}).join('');
+}
+function loadCombo(b,s){ CLASSES.filter(c=>c.batch===b&&c.section===s).forEach(c=>selected.add(c.id)); save(); renderAll(); }
+
+function renderBuild(){
+  let list=[...selected].map(byId).filter(Boolean).sort((x,y)=>DAYS.indexOf(x.day)-DAYS.indexOf(y.day)||x.slot-y.slot);
+  selList.innerHTML = list.length? list.map(c=>classCard(c,'sel')).join('')
+    : '<div class="empty">No classes yet. Use quick-load above, or add from the Browse tab.</div>';
+  const courses=new Set(list.map(c=>c.code+c.section)).size;
+  const days=new Set(list.map(c=>c.day)).size;
+  stCourses.textContent=courses; stDays.textContent=days; stConf.textContent=countConflicts(list);
+}
+function countConflicts(list){
+  const m={}; let n=0;
+  list.forEach(c=>{const k=c.day+c.slot;m[k]=(m[k]||0)+1;});
+  Object.values(m).forEach(v=>{if(v>1)n+=v-1;});
+  return n;
+}
+function renderGrid(){
+  let list=[...selected].map(byId).filter(Boolean);
+  const cellMap={};
+  list.forEach(c=>{const k=c.day+'_'+c.slot;(cellMap[k]=cellMap[k]||[]).push(c);});
+  let html='<tr><th>Time</th>'+DAYS.map(d=>`<th>${d}</th>`).join('')+'</tr>';
+  for(let s=0;s<SLOTS.length;s++){
+    html+=`<tr><td class="tm">${SLOTS[s]}</td>`;
+    for(const d of DAYS){
+      const cs=cellMap[d+'_'+s]||[];
+      const conf=cs.length>1?'conf':'';
+      html+='<td>'+cs.map(c=>`<div class="cell ${pillClass(c.batch)} ${conf}"><div class="cc">${c.code}</div><div class="cm">${c.batch==='MBA'?'MBA':c.batch} ${c.section} &middot; ${c.room}</div></div>`).join('')+'</td>';
+    }
+    html+='</tr>';
+  }
+  gridTable.innerHTML=html;
+  // conflicts + stats
+  const conf=countConflicts(list);
+  conflictArea.innerHTML = conf
+    ? `<div class="warnbox"><b>&#9888; ${conf} time clash${conf>1?'es':''}</b> &mdash; two classes share a slot (outlined red). Swap one to a different section.</div>`
+    : (list.length?`<div class="okbox"><b>&#10003; No clashes.</b> ${new Set(list.map(c=>c.code+c.section)).size} courses across ${new Set(list.map(c=>c.day)).size} days.</div>`:'<div class="empty">No classes selected yet.</div>');
+  // per-day gaps
+  const dstat=DAYS.map(d=>{
+    const slots=list.filter(c=>c.day===d).map(c=>c.slot).sort((a,b)=>a-b);
+    if(!slots.length)return null;
+    const span=slots[slots.length-1]-slots[0]+1, gaps=span-slots.length;
+    return `${d}: ${slots.length} class${slots.length>1?'es':''}${gaps?`, ${gaps} gap slot${gaps>1?'s':''}`:', no gaps'}`;
+  }).filter(Boolean);
+  dayStats.innerHTML = dstat.length?`<div class="okbox" style="background:#fff;color:#1f2a24;border-color:#e2ebe5"><b>Per day:</b><br>${dstat.join('<br>')}</div>`:'';
+  printSummary.textContent = list.length?`${new Set(list.map(c=>c.code+c.section)).size} courses · ${new Set(list.map(c=>c.day)).size} days/week · Syed Mir Ahsan Habib`:'';
+}
+function renderAll(){renderBrowse();renderBuild();renderGrid();}
+function show(v){
+  ['browse','build','grid'].forEach(x=>{
+    document.getElementById(x+'View').classList.toggle('hide',x!==v);
+    document.getElementById('tab'+x[0].toUpperCase()+x.slice(1)).classList.toggle('on',x===v);
+  });
+  window.scrollTo(0,0);
+}
+['fBatch','fSection','fDay','fSearch'].forEach(id=>document.getElementById(id).addEventListener('input',renderBrowse));
+renderQuick(); renderAll();
+
+// PWA
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').catch(()=>{});}
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
+  if(localStorage.getItem('bup_dismiss'))return;
+  const bar=document.createElement('div');bar.className='install';
+  bar.innerHTML='<span>Install this app for offline use</span><span><button class="yes">Install</button><button class="no">Later</button></span>';
+  document.body.appendChild(bar);
+  bar.querySelector('.yes').onclick=async()=>{bar.remove();deferredPrompt.prompt();};
+  bar.querySelector('.no').onclick=()=>{bar.remove();localStorage.setItem('bup_dismiss','1');};
+});
+</script>
+</body>
+</html>
